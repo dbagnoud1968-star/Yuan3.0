@@ -237,7 +237,9 @@ function updateDeckDisplay(name) {
   const playing = deck.playing;
   $(`#state-${name}`).textContent = !deck.track ? "EMPTY" : playing ? "PLAYING" : "LOADED";
   $(`#state-${name}`).classList.toggle("is-playing", playing);
+  $(`#deck-${name}`).classList.toggle("is-playing", playing);
   $(`#play-${name}`).classList.toggle("is-playing", playing);
+  $(`#play-${name}`).setAttribute("aria-pressed", String(playing));
   $(`#play-${name}`).textContent = playing ? "Ⅱ" : "▶";
   $(`#reverse-${name}`).classList.toggle("active", deck.reverse);
   $(`#tempo-${name}`).value = deck.tempo;

@@ -165,10 +165,11 @@ export class Deck {
 
   endScratch() {
     if (!this.scratching) return;
+    const position = this.position;
     this.scratching = false;
     if (this.resumeAfterScratch) {
       this.reverse = false;
-      this.position = this.getPosition();
+      this.position = position;
       this.stopSource();
       this.startSource();
       this.playing = true;
@@ -183,6 +184,7 @@ export class Deck {
 
   getPosition() {
     if (!this.track) return 0;
+    if (this.scratching) return this.position;
     let position = this.position;
     if (this.playing) {
       const elapsed = this.engine.context.currentTime - this.startedAt;
