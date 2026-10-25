@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#090a0d">
+    <title>NEON DECK — Browser DJ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <script type="module" src="./main.js"></script>
+  </head>
+  <body>
+    <div class="unlock-screen" id="unlock-screen">
+      <div class="unlock-card">
+        <div class="brand-mark">ND<span>•</span></div>
+        <p class="eyebrow">BROWSER DJ SYSTEM</p>
+        <h1>MAKE SOME<br><span>NOISE.</span></h1>
+        <p class="muted">Three original, locally synthesized tracks. No upload or account required.</p>
+        <button class="button button-primary unlock-button" id="unlock-audio">POWER ON <span>↗</span></button>
+        <small>Audio starts only after you press power.</small>
+      </div>
+    </div>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Neon Deck home"><span class="brand-mark">ND<span>•</span></span><span>NEON<span class="brand-light">DECK</span></span></a>
+        <div class="top-status"><span class="status-dot"></span><span id="system-status">SYSTEM STANDBY</span><span class="separator">/</span>44.1 KHZ</div>
+        <div class="master-section">
+          <label class="master-control"><span>MASTER</span><input id="master-volume" type="range" min="0" max="1" step="0.01" value="0.78"></label>
+          <div class="meter-group" aria-label="Master output level">
+            <div class="meter"><i id="master-meter-l"></i></div><div class="meter"><i id="master-meter-r"></i></div>
+          </div>
+          <button class="button button-small automix-button" id="automix-button" aria-pressed="false">AUTOMIX <span id="automix-state">OFF</span></button>
+          <button class="icon-button" id="help-button" aria-label="Keyboard shortcuts">?</button>
+        </div>
+      </header>
+
+      <section class="wave-stage" aria-label="Deck waveforms">
+        <div class="wave-heading"><span>PHASE MONITOR</span><span class="wave-legend"><i class="legend-low"></i> LOW <i class="legend-mid"></i> MID <i class="legend-high"></i> HIGH</span><span id="clock-readout">00:00:00</span></div>
+        <div class="wave-row"><span class="wave-deck-label deck-a-label">A</span><canvas id="wave-a" height="78" aria-label="Deck A scrolling waveform"></canvas></div>
+        <div class="wave-row"><span class="wave-deck-label deck-b-label">B</span><canvas id="wave-b" height="78" aria-label="Deck B scrolling waveform"></canvas></div>
+      </section>
+
+      <section class="console" aria-label="DJ mixing console">
+        <article class="deck deck-a" id="deck-a">
+          <div class="deck-heading"><div><span class="deck-kicker">PLAYER 01</span><h2>DECK <b>A</b></h2></div><span class="deck-state" id="state-a">EMPTY</span></div>
+          <div class="track-title" id="title-a">Select a track below</div>
+          <div class="readout-row"><span class="digital bpm-display" id="bpm-a">---.<small>--</small></span><span class="key-readout" id="key-a">KEY --</span><span class="digital time-display" id="time-a">00:00</span></div>
+          <div class="platter-wrap"><div class="platter" id="platter-a" role="slider" aria-label="Deck A jog wheel" tabindex="0"><div class="platter-label">NEON<br>DECK<span>A</span></div><div class="platter-center"></div><i class="platter-marker"></i></div><div class="platter-hint">TOUCH TO SCRATCH</div></div>
+          <canvas class="overview" id="overview-a" height="34" aria-label="Deck A track overview"></canvas>
+          <div class="overview-time"><span id="elapsed-a">00:00</span><span id="duration-a">00:00</span></div>
+          <div class="tempo-row"><label>TEMPO <span id="tempo-value-a">+0.0%</span></label><input id="tempo-a" class="tempo-slider accent-a" type="range" min="-16" max="16" step="0.1" value="0"><div class="pitch-buttons"><button data-deck="a" data-bend="-1">−</button><button data-deck="a" data-bend="1">+</button></div></div>
+          <div class="loop-row"><span>LOOP</span><button class="loop-size" data-deck="a" data-beats="1">1</button><button class="loop-size" data-deck="a" data-beats="2">2</button><button class="loop-size selected" data-deck="a" data-beats="4">4</button><button class="loop-size" data-deck="a" data-beats="8">8</button><button class="loop-size" data-deck="a" data-beats="16">16</button><button class="loop-toggle" data-deck="a" id="loop-toggle-a">LOOP OFF</button></div>
+          <div class="deck-controls"><button class="transport play" id="play-a" aria-label="Play Deck A">▶</button><button class="transport cue" id="cue-a" aria-label="Cue Deck A">CUE</button><button class="transport sync" id="sync-a" aria-label="Sync Deck A">SYNC</button><button class="transport reverse" id="reverse-a" aria-label="Reverse Deck A">REV</button></div>
+          <div class="hot-cues"><span>HOT CUE</span><button data-deck="a" data-cue="0">1</button><button data-deck="a" data-cue="1">2</button><button data-deck="a" data-cue="2">3</button><button data-deck="a" data-cue="3">4</button><small>SHIFT + CUE TO SAVE</small></div>
+        </article>
+
+        <section class="mixer" aria-label="Channel mixer">
+          <div class="mixer-top"><span>DJM-<b>ND</b></span><span class="fx-active" id="fx-status">FX — OFF</span></div>
+          <div class="channels">
+            <div class="channel channel-a">
+              <div class="channel-tag">A <i></i></div>
+              <label class="knob-control">TRIM<div class="knob" data-control="trim" data-deck="a" data-min="0" data-max="2" data-value="1" role="slider" tabindex="0"><i></i></div></label>
+              <div class="eq-group">
+                <label class="knob-control">HI<div class="knob" data-control="high" data-deck="a" data-min="-18" data-max="6" data-value="0" role="slider" tabindex="0"><i></i></div></label>
+                <label class="knob-control">MID<div class="knob" data-control="mid" data-deck="a" data-min="-18" data-max="6" data-value="0" role="slider" tabindex="0"><i></i></div></label>
+                <label class="knob-control">LOW<div class="knob" data-control="low" data-deck="a" data-min="-18" data-max="6" data-value="0" role="slider" tabindex="0"><i></i></div></label>
+              </div>
+              <label class="knob-control filter-control">FILTER<div class="knob filter-knob" data-control="filter" data-deck="a" data-min="-1" data-max="1" data-value="0" role="slider" tabindex="0"><i></i></div><span class="filter-labels"><small>LPF</small><small>HPF</small></span></label>
+              <div class="channel-fader"><span>LEVEL</span><input id="fader-a" class="vertical-fader accent-a" type="range" min="0" max="1" step="0.01" value="0.82"></div>
+            </div>
+            <div class="fx-panel">
+              <span class="fx-title">BEAT FX</span>
+              <select id="fx-type" aria-label="Effect type"><option value="off">FX OFF</option><option value="echo">ECHO</option><option value="flanger">FLANGER</option><option value="reverb">REVERB</option></select>
+              <label class="fx-label">ROUTE<select id="fx-route"><option value="master">MASTER</option><option value="a">DECK A</option><option value="b">DECK B</option></select></label>
+              <label class="fx-label">BEAT<select id="fx-beat"><option value="0.25">1/4</option><option value="0.5">1/2</option><option value="1" selected>1</option><option value="2">2</option><option value="4">4</option></select></label>
+              <label class="fx-depth">LEVEL <input id="fx-level" type="range" min="0" max="0.75" step="0.01" value="0.25"></label>
+              <div class="fx-meter"><span></span></div>
+            </div>
+            <div class="channel channel-b">
+              <div class="channel-tag">B <i></i></div>
+              <label class="knob-control">TRIM<div class="knob" data-control="trim" data-deck="b" data-min="0" data-max="2" data-value="1" role="slider" tabindex="0"><i></i></div></label>
+              <div class="eq-group">
+                <label class="knob-control">HI<div class="knob" data-control="high" data-deck="b" data-min="-18" data-max="6" data-value="0" role="slider" tabindex="0"><i></i></div></label>
+                <label class="knob-control">MID<div class="knob" data-control="mid" data-deck="b" data-min="-18" data-max="6" data-value="0" role="slider" tabindex="0"><i></i></div></label>
+                <label class="knob-control">LOW<div class="knob" data-control="low" data-deck="b" data-min="-18" data-max="6" data-value="0" role="slider" tabindex="0"><i></i></div></label>
+              </div>
+              <label class="knob-control filter-control">FILTER<div class="knob filter-knob" data-control="filter" data-deck="b" data-min="-1" data-max="1" data-value="0" role="slider" tabindex="0"><i></i></div><span class="filter-labels"><small>LPF</small><small>HPF</small></span></label>
+              <div class="channel-fader"><span>LEVEL</span><input id="fader-b" class="vertical-fader accent-b" type="range" min="0" max="1" step="0.01" value="0.82"></div>
+            </div>
+          </div>
+          <div class="crossfader-row"><span>A</span><input id="crossfader" type="range" min="0" max="1" step="0.001" value="0.5" aria-label="Crossfader"><span>B</span></div>
+          <div class="mixer-foot">ANALOG FEEL <span>•</span> DIGITAL SOUL</div>
+        </section>
+
+        <article class="deck deck-b" id="deck-b">
+          <div class="deck-heading"><div><span class="deck-kicker">PLAYER 02</span><h2>DECK <b>B</b></h2></div><span class="deck-state" id="state-b">EMPTY</span></div>
+          <div class="track-title" id="title-b">Select a track below</div>
+          <div class="readout-row"><span class="digital bpm-display" id="bpm-b">---.<small>--</small></span><span class="key-readout" id="key-b">KEY --</span><span class="digital time-display" id="time-b">00:00</span></div>
+          <div class="platter-wrap"><div class="platter" id="platter-b" role="slider" aria-label="Deck B jog wheel" tabindex="0"><div class="platter-label">NEON<br>DECK<span>B</span></div><div class="platter-center"></div><i class="platter-marker"></i></div><div class="platter-hint">TOUCH TO SCRATCH</div></div>
+          <canvas class="overview" id="overview-b" height="34" aria-label="Deck B track overview"></canvas>
+          <div class="overview-time"><span id="elapsed-b">00:00</span><span id="duration-b">00:00</span></div>
+          <div class="tempo-row"><label>TEMPO <span id="tempo-value-b">+0.0%</span></label><input id="tempo-b" class="tempo-slider accent-b" type="range" min="-16" max="16" step="0.1" value="0"><div class="pitch-buttons"><button data-deck="b" data-bend="-1">−</button><button data-deck="b" data-bend="1">+</button></div></div>
+          <div class="loop-row"><span>LOOP</span><button class="loop-size" data-deck="b" data-beats="1">1</button><button class="loop-size" data-deck="b" data-beats="2">2</button><button class="loop-size selected" data-deck="b" data-beats="4">4</button><button class="loop-size" data-deck="b" data-beats="8">8</button><button class="loop-size" data-deck="b" data-beats="16">16</button><button class="loop-toggle" data-deck="b" id="loop-toggle-b">LOOP OFF</button></div>
+          <div class="deck-controls"><button class="transport play" id="play-b" aria-label="Play Deck B">▶</button><button class="transport cue" id="cue-b" aria-label="Cue Deck B">CUE</button><button class="transport sync" id="sync-b" aria-label="Sync Deck B">SYNC</button><button class="transport reverse" id="reverse-b" aria-label="Reverse Deck B">REV</button></div>
+          <div class="hot-cues"><span>HOT CUE</span><button data-deck="b" data-cue="0">1</button><button data-deck="b" data-cue="1">2</button><button data-deck="b" data-cue="2">3</button><button data-deck="b" data-cue="3">4</button><small>SHIFT + CUE TO SAVE</small></div>
+        </article>
+      </section>
+
+      <section class="browser-panel">
+        <div class="browser-heading"><div><span class="deck-kicker">LIBRARY / LOCAL</span><h2>TRACK <span>BROWSER</span></h2></div><div class="browser-actions"><label class="search-box">⌕ <input id="track-search" type="search" placeholder="Search tracks..." aria-label="Search tracks"></label><button class="button button-small" id="add-tracks">＋ ADD TRACKS</button><input type="file" id="file-input" accept="audio/*" multiple hidden></div></div>
+        <div class="track-table-wrap" id="drop-zone">
+          <table class="track-table"><thead><tr><th>#</th><th>TITLE / ARTIST</th><th>GENRE</th><th>BPM</th><th>KEY</th><th>LENGTH</th><th>LOAD</th></tr></thead><tbody id="track-list"></tbody></table>
+          <div class="empty-library" id="empty-library">DROP AUDIO FILES HERE OR ADD TRACKS</div>
+        </div>
+        <div class="browser-footer"><span><i class="status-dot"></i> <span id="library-count">03 TRACKS</span> <span class="separator">/</span> AUDIO STAYS ON YOUR DEVICE</span><span>MP3 · WAV · OGG · M4A</span></div>
+      </section>
+      <footer class="footer"><span>NEON DECK <span>v1.0</span></span><span>MADE FOR THE MOMENT <b>◆</b></span></footer>
+    </main>
+
+    <dialog id="shortcuts-dialog">
+      <div class="dialog-heading"><span class="deck-kicker">QUICK REFERENCE</span><button class="icon-button" id="close-help" aria-label="Close shortcuts">×</button></div>
+      <h2>KEYBOARD <span>SHORTCUTS</span></h2>
+      <div class="shortcut-list"><span>Play / pause Deck A</span><kbd>Q</kbd><span>Play / pause Deck B</span><kbd>P</kbd><span>Cue Deck A / B</span><kbd>W / O</kbd><span>Crossfader left / right</span><kbd>← / →</kbd><span>Toggle Automix</span><kbd>M</kbd><span>Show shortcuts</span><kbd>?</kbd></div>
+      <p class="muted">Shortcuts are disabled while typing in a field.</p>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
